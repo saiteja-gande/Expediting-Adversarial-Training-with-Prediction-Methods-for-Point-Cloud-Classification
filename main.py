@@ -170,18 +170,43 @@ class Lit(pl.LightningModule): #class which helps in training using pytorch ligh
 
         if args.model == 'PointNet':
             if args.Prediction == True:
-                if not self.firstTime:
-                        opt1.stepLookAhead()
-                outputs2, am3x3, am64x64 = self.model((inputs+adv_inputs).transpose(1,2), self.Tnet)
-                if not self.firstTime: #first time steplookhead doesnt contain values
-                    opt1.restoreStepLookAhead()
-                opt1.zero_grad()
-                loss2 = pointnetloss(outputs2, labels, am3x3, am64x64, self.Tnet)
-                self.manual_backward(loss2)
-                opt1.step()        
-                self.firstTime = False
-                self.log("train_loss", loss2, on_step=True, on_epoch=True, prog_bar=True,sync_dist=True)
-                return loss2      
+                if args.training == 'mixed':
+                    if not self.firstTime:
+                            opt1.stepLookAhead()
+                    outputs1, cm3x3, cm64x64 = self.model((inputs).transpose(1,2), self.Tnet) #clean samples
+                    outputs2, am3x3, am64x64 = self.model((inputs+adv_inputs).transpose(1,2), self.Tnet) #adversarial samples
+                    if not self.firstTime: #first time steplookhead doesnt contain values
+                        opt1.restoreStepLookAhead()
+                    opt1.zero_grad()
+                    loss1 = pointnetloss(outputs1, labels, cm3x3, cm64x64, self.Tnet)
+                    loss2 = pointnetloss(outputs2, labels, am3x3, am64x64, self.Tnet)
+                    loss = loss1 + loss2
+                    self.manual_backward(loss)
+                    opt1.step()        
+                    self.firstTime = False
+                    _, preds1 = torch.max(outputs1.data, 1)
+                    _, preds2 = torch.max(outputs2.data, 1)
+                    acc1 = (preds1 == labels).float().mean() * 100
+                    acc2 = (preds2 == labels).float().mean() * 100
+                    self.log("train_acc", acc1, on_step=True, on_epoch=True, prog_bar=True,sync_dist=True)
+                    self.log("pgd_train_acc", acc2, on_step=True, on_epoch=True, prog_bar=True,sync_dist=True)
+                    self.log("clean_train_loss", loss1, on_epoch=True,sync_dist=True)
+                    self.log("pgd_train_loss", loss2, on_epoch=True,sync_dist=True)
+                    self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True,sync_dist=True)
+                    return loss
+                else:
+                    if not self.firstTime:
+                            opt1.stepLookAhead()
+                    outputs2, am3x3, am64x64 = self.model((inputs+adv_inputs).transpose(1,2), self.Tnet)
+                    if not self.firstTime: #first time steplookhead doesnt contain values
+                        opt1.restoreStepLookAhead()
+                    opt1.zero_grad()
+                    loss2 = pointnetloss(outputs2, labels, am3x3, am64x64, self.Tnet)
+                    self.manual_backward(loss2)
+                    opt1.step()        
+                    self.firstTime = False
+                    self.log("train_loss", loss2, on_step=True, on_epoch=True, prog_bar=True,sync_dist=True)
+                    return loss2      
             else:
                 if args.training == 'mixed':
                     outputs1, cm3x3, cm64x64 = self.model((inputs).transpose(1,2), self.Tnet) #clean samples
@@ -209,18 +234,43 @@ class Lit(pl.LightningModule): #class which helps in training using pytorch ligh
                     return loss
         if args.model == 'DGCNN':
             if args.Prediction == True:
-                if not self.firstTime:
-                        opt1.stepLookAhead()
-                outputs2 = self.model((inputs+adv_inputs).permute(0, 2, 1))
-                if not self.firstTime:
-                    opt1.restoreStepLookAhead()
-                opt1.zero_grad()
-                loss2 = self.criterion(outputs2, labels)
-                self.manual_backward(loss2)
-                opt1.step()        
-                self.firstTime = False
-                self.log("train_loss", loss2, on_step=True, on_epoch=True, prog_bar=True,sync_dist=True)
-                return loss2       
+                if args.training == 'mixed':
+                    if not self.firstTime:
+                            opt1.stepLookAhead()
+                    outputs1 = self.model((inputs).permute(0, 2, 1))
+                    outputs2 = self.model((inputs+adv_inputs).permute(0, 2, 1))
+                    if not self.firstTime:
+                        opt1.restoreStepLookAhead()
+                    opt1.zero_grad()
+                    loss1 = self.criterion(outputs1,labels)
+                    loss2 = self.criterion(outputs2,labels)
+                    loss = loss1 + loss2
+                    self.manual_backward(loss)
+                    opt1.step()        
+                    self.firstTime = False
+                    _, preds1 = torch.max(outputs1.data, 1)
+                    _, preds2 = torch.max(outputs2.data, 1)
+                    acc1 = (preds1 == labels).float().mean() * 100
+                    acc2 = (preds2 == labels).float().mean() * 100
+                    self.log("clean_train_acc", acc1, on_step=True, on_epoch=True, prog_bar=True,sync_dist=True)
+                    self.log("pgd_train_acc", acc2, on_step=True, on_epoch=True, prog_bar=True,sync_dist=True)
+                    self.log("clean_train_loss", loss1, on_epoch=True,sync_dist=True)
+                    self.log("pgd_train_loss", loss2, on_epoch=True,sync_dist=True)
+                    self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True,sync_dist=True)
+                    return loss
+                else:
+                    if not self.firstTime:
+                            opt1.stepLookAhead()
+                    outputs2 = self.model((inputs+adv_inputs).permute(0, 2, 1))
+                    if not self.firstTime:
+                        opt1.restoreStepLookAhead()
+                    opt1.zero_grad()
+                    loss2 = self.criterion(outputs2, labels)
+                    self.manual_backward(loss2)
+                    opt1.step()        
+                    self.firstTime = False
+                    self.log("train_loss", loss2, on_step=True, on_epoch=True, prog_bar=True,sync_dist=True)
+                    return loss2       
             else:
                 if args.training == 'mixed':
                     outputs1 = self.model((inputs).permute(0, 2, 1))
@@ -318,7 +368,7 @@ if __name__ == '__main__':
     test_ds = PointCloudData(path,test= True,folder='test',transform=train_transforms) #test dataset
     valid_ds = PointCloudData(path, valid=True, folder='val', transform=train_transforms)#validation dataset
 
-    train_loader = DataLoader(dataset=test_ds, batch_size=args.batch_size, shuffle=True) #Train loader
+    train_loader = DataLoader(dataset=train_ds, batch_size=args.batch_size, shuffle=True) #Train loader
     valid_loader = DataLoader(dataset=valid_ds, batch_size=args.batch_size) #Valid Loader
     test_loader = DataLoader(dataset=test_ds,batch_size=args.batch_size) #Test Loader
 
