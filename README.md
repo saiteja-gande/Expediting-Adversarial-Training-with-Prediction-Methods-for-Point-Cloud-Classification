@@ -1,7 +1,10 @@
-# StudienArbeit on Expediting-Adversarial-Training-with-Prediction-Methods-for-PointNet-and-DGCNN
-Expediting Adversarial Training with Prediction Methods to Enhance PointNet and DGCNN Architectures’ Resilience against Adversarial Attacks on Point Cloud Data
+# StudienArbeit: Expediting Adversarial Training with Prediction Methods for PointNet and DGCNN
+
+This project aims to expedite adversarial training with prediction methods to enhance the resilience of PointNet and DGCNN architectures against adversarial attacks on point cloud data.
 
 ## Requirements
+
+To run this project, you will need the following dependencies:
 
 *   python==3.9.15
 *   numpy>=1.23.0
@@ -12,27 +15,34 @@ Expediting Adversarial Training with Prediction Methods to Enhance PointNet and 
 *   tensorboard==2.11.2
 
 ## Usage
-To use the code with the default setting, simply run the command 
-'python main.py'
-To use different settings following command line arguments are available to use and can be used accordingly:
 
-*   --model: To change the Model between PointNet and DGCNN (default: PointNet).
-*   --epochs: To change the number of epochs to train (default: 50).
-*   --Tnet : To change between with or without Tnet (default: True)
-*   --training : To change between 'fgsm_attack', 'pgd_linf','mixed' types of training (default: None)
-*   --attack : To change between 'fgsm', 'pgd' adversarial attacks
-*   --prediction : Use if we want prediction or not (default: False)
-*   --learning_rate : To change the learning rate (default: 0.01)
-*   --step_size : To change the step size for adversarial attacks (default: 0.001)
-*   --steps : To change the number of steps for a PGD attack (default: 5)
-*   --epsilon : To change the epsilon value for adversarial attacks (default: 0.1)
-*   --num-workers : To change the number of workers (default: 0)
-*   --batch-size : To change the batch size (default: 32)
-*   --delta : To change the value of the multiplication factor of the prediction Method (default: 1)
+To use the code with the default settings, simply run the following command:
 
-## contents
+python main.py
 
-* This directory includes the implementation of Adversarial attacks used for the project in `attacks.py`.
-* The `dataloader.py` contains the data loader class along with necessary augmentations.
-* The `models.py` consists of implemented PointNet and DGCNN architectures.
-* The dataset used for this project is [ModelNet10](http://3dvision.princeton.edu/projects/2014/3DShapeNets/ModelNet10.zip) 
+
+You can also customize the settings by using the following command line arguments:
+
+*   `--model`: Choose between PointNet and DGCNN models (default: PointNet).
+*   `--epochs`: Set the number of epochs to train (default: 50).
+*   `--Tnet`: Choose whether to use Tnet or not (default: True).
+*   `--training`: Choose between 'fgsm_attack', 'pgd_linf', or 'mixed' types of training (default: None).
+*   `--attack`: Choose between 'fgsm' or 'pgd' adversarial attacks.
+*   `--prediction`: Choose whether to use prediction or not (default: False).
+*   `--learning_rate`: Set the learning rate (default: 0.01).
+*   `--step_size`: Set the step size for adversarial attacks (default: 0.001).
+*   `--steps`: Set the number of steps for a PGD attack (default: 5).
+*   `--epsilon`: Set the epsilon value for adversarial attacks (default: 0.1).
+*   `--num-workers`: Set the number of workers (default: 0).
+*   `--batch-size`: Set the batch size (default: 32).
+*   `--delta`: Set the value of the multiplication factor of the prediction method (default: 1).
+
+## Contents
+
+This repository contains the following files:
+
+- `attacks.py`: Implementation of adversarial attacks used in this project.
+- `dataloader.py`: Data loader class with necessary augmentations.
+- `models.py`: Implementation of PointNet and DGCNN architectures.
+
+The dataset used in this project is [ModelNet10](http://3dvision.princeton.edu/projects/2014/3DShapeNets/ModelNet10.zip).
