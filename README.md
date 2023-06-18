@@ -17,9 +17,9 @@ To run this project, you will need the following dependencies:
 ## Usage
 
 To use the code with the default settings, simply run the following command:
-
+```
 python main.py
-
+```
 
 You can also customize the settings by using the following command line arguments:
 
