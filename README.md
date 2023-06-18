@@ -27,7 +27,7 @@ You can also customize the settings by using the following command line argument
 *   `--epochs`: Set the number of epochs to train (default: 50).
 *   `--Tnet`: Choose whether to use Tnet or not (default: True).
 *   `--training`: Choose between 'fgsm_attack', 'pgd_linf', or 'mixed' types of training (default: None).
-*   `--attack`: Choose between 'fgsm' or 'pgd' adversarial attacks.
+*   `--attack`: Choose between 'fgsm' or 'pgd' adversarial attacks (default: None).
 *   `--prediction`: Choose whether to use prediction or not (default: False).
 *   `--learning_rate`: Set the learning rate (default: 0.01).
 *   `--step_size`: Set the step size for adversarial attacks (default: 0.001).
