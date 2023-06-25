@@ -1,4 +1,4 @@
-# StudienArbeit: Expediting Adversarial Training with Prediction Methods for PointNet and DGCNN
+# StudienArbeit: Expediting Adversarial Training with Prediction Methods for Point Cloud Classification
 
 This project aims to expedite adversarial training with prediction methods to enhance the resilience of PointNet and DGCNN architectures against adversarial attacks on point cloud data.
 
