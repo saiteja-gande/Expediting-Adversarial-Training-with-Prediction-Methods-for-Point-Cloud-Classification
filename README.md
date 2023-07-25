@@ -1,4 +1,4 @@
-# StudienArbeit: Expediting Adversarial Training with Prediction Methods for PointNet and DGCNN
+# StudienArbeit: Expediting Adversarial Training with Prediction Methods for Point Cloud Classification
 
 This project aims to expedite adversarial training with prediction methods to enhance the resilience of PointNet and DGCNN architectures against adversarial attacks on point cloud data.
 
@@ -17,9 +17,9 @@ To run this project, you will need the following dependencies:
 ## Usage
 
 To use the code with the default settings, simply run the following command:
-
+```
 python main.py
-
+```
 
 You can also customize the settings by using the following command line arguments:
 
@@ -27,7 +27,7 @@ You can also customize the settings by using the following command line argument
 *   `--epochs`: Set the number of epochs to train (default: 50).
 *   `--Tnet`: Choose whether to use Tnet or not (default: True).
 *   `--training`: Choose between 'fgsm_attack', 'pgd_linf', or 'mixed' types of training (default: None).
-*   `--attack`: Choose between 'fgsm' or 'pgd' adversarial attacks.
+*   `--attack`: Choose between 'fgsm' or 'pgd' adversarial attacks (default: None).
 *   `--prediction`: Choose whether to use prediction or not (default: False).
 *   `--learning_rate`: Set the learning rate (default: 0.01).
 *   `--step_size`: Set the step size for adversarial attacks (default: 0.001).
