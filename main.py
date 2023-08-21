@@ -1,11 +1,8 @@
 import numpy as np
 import random
 import torch
-import scipy.spatial.distance
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
-import plotly.graph_objects as go
-import plotly.express as px
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 import torch.nn as nn
@@ -16,7 +13,6 @@ import argparse
 from attacks import pgd_linf, fgsm_attack
 from dataloader import *
 import torch.optim as optim
-import matplotlib.pyplot as plt
 import torch.nn.functional as F
 
 parser = argparse.ArgumentParser(
@@ -81,7 +77,8 @@ parser.add_argument(
     default=0.1,
     help='epsilon for attacks.')
 parser.add_argument(
-    '--num-workers',
+    '--num_workers',
+    '-nworkers',
     type=int,
     default=0,
     help='Number of pre-fetching threads.')
@@ -169,20 +166,26 @@ class Lit(pl.LightningModule): #class which helps in training using pytorch ligh
             adv_inputs = torch.zeros_like(inputs)
 
         if args.model == 'PointNet':
-            if args.Prediction == True:
+            if args.Prediction == True: #we just use prediction step for generating adversaraial examples
                 if args.training == 'mixed':
                     if not self.firstTime:
-                            opt1.stepLookAhead()
+                        opt1.stepLookAhead()
+                    if self.attack == 'pgd':
+                        adv_inputs = pgd_linf(self.model, inputs, labels,self.criterion,self.num_steps,self.step_size,self.eps,self.Tnet,m)
+                    elif self.attack == 'fgsm':
+                        adv_inputs = fgsm_attack(self.model,self.criterion,inputs,labels,self.eps,self.Tnet, m)
+                    else:
+                        adv_inputs = torch.zeros_like(inputs)
+                    if not self.firstTime: #first time steplookhead doesnt contain values
+                        opt1.restoreStepLookAhead() 
                     outputs1, cm3x3, cm64x64 = self.model((inputs).transpose(1,2), self.Tnet) #clean samples
                     outputs2, am3x3, am64x64 = self.model((inputs+adv_inputs).transpose(1,2), self.Tnet) #adversarial samples
-                    if not self.firstTime: #first time steplookhead doesnt contain values
-                        opt1.restoreStepLookAhead()
                     opt1.zero_grad()
                     loss1 = pointnetloss(outputs1, labels, cm3x3, cm64x64, self.Tnet)
                     loss2 = pointnetloss(outputs2, labels, am3x3, am64x64, self.Tnet)
                     loss = loss1 + loss2
                     self.manual_backward(loss)
-                    opt1.step()        
+                    opt1.step()       
                     self.firstTime = False
                     _, preds1 = torch.max(outputs1.data, 1)
                     _, preds2 = torch.max(outputs2.data, 1)
@@ -196,10 +199,18 @@ class Lit(pl.LightningModule): #class which helps in training using pytorch ligh
                     return loss
                 else:
                     if not self.firstTime:
-                            opt1.stepLookAhead()
-                    outputs2, am3x3, am64x64 = self.model((inputs+adv_inputs).transpose(1,2), self.Tnet)
-                    if not self.firstTime: #first time steplookhead doesnt contain values
+                        opt1.stepLookAhead()
+                    if self.attack == 'pgd':
+                        # print('just pgd training')
+                        adv_inputs = pgd_linf(self.model, inputs, labels,self.criterion,self.num_steps,self.step_size,self.eps,self.Tnet,m)
+                    elif self.attack == 'fgsm':
+                        adv_inputs = fgsm_attack(self.model,self.criterion,inputs,labels,self.eps,self.Tnet, m)
+                    else:
+                        adv_inputs = torch.zeros_like(inputs)
+                    if not self.firstTime:
                         opt1.restoreStepLookAhead()
+                    # outputs1, cm3x3, cm64x64 = self.model((inputs).transpose(1,2), self.Tnet)
+                    outputs2, am3x3, am64x64 = self.model((inputs+adv_inputs).transpose(1,2), self.Tnet)
                     opt1.zero_grad()
                     loss2 = pointnetloss(outputs2, labels, am3x3, am64x64, self.Tnet)
                     self.manual_backward(loss2)
@@ -236,11 +247,17 @@ class Lit(pl.LightningModule): #class which helps in training using pytorch ligh
             if args.Prediction == True:
                 if args.training == 'mixed':
                     if not self.firstTime:
-                            opt1.stepLookAhead()
+                        opt1.stepLookAhead()
+                    if self.attack == 'pgd':
+                        adv_inputs = pgd_linf(self.model, inputs, labels,self.criterion,self.num_steps,self.step_size,self.eps,self.Tnet,m)
+                    elif self.attack == 'fgsm':
+                        adv_inputs = fgsm_attack(self.model,self.criterion,inputs,labels,self.eps,self.Tnet, m)
+                    else:
+                        adv_inputs = torch.zeros_like(inputs)
+                    if not self.firstTime: #first time steplookhead doesnt contain values
+                        opt1.restoreStepLookAhead() 
                     outputs1 = self.model((inputs).permute(0, 2, 1))
                     outputs2 = self.model((inputs+adv_inputs).permute(0, 2, 1))
-                    if not self.firstTime:
-                        opt1.restoreStepLookAhead()
                     opt1.zero_grad()
                     loss1 = self.criterion(outputs1,labels)
                     loss2 = self.criterion(outputs2,labels)
@@ -260,10 +277,16 @@ class Lit(pl.LightningModule): #class which helps in training using pytorch ligh
                     return loss
                 else:
                     if not self.firstTime:
-                            opt1.stepLookAhead()
+                        opt1.stepLookAhead()
+                    if self.attack == 'pgd':
+                        adv_inputs = pgd_linf(self.model, inputs, labels,self.criterion,self.num_steps,self.step_size,self.eps,self.Tnet,m)
+                    elif self.attack == 'fgsm':
+                        adv_inputs = fgsm_attack(self.model,self.criterion,inputs,labels,self.eps,self.Tnet, m)
+                    else:
+                        adv_inputs = torch.zeros_like(inputs)
+                    if not self.firstTime: #first time steplookhead doesnt contain values
+                        opt1.restoreStepLookAhead() 
                     outputs2 = self.model((inputs+adv_inputs).permute(0, 2, 1))
-                    if not self.firstTime:
-                        opt1.restoreStepLookAhead()
                     opt1.zero_grad()
                     loss2 = self.criterion(outputs2, labels)
                     self.manual_backward(loss2)
@@ -367,9 +390,9 @@ if __name__ == '__main__':
     # train_ds = PointCloudData(path)
     test_ds = PointCloudData(path,test= True,folder='test',transform=train_transforms) #test dataset
     valid_ds = PointCloudData(path, valid=True, folder='val', transform=train_transforms)#validation dataset
-
-    train_loader = DataLoader(dataset=train_ds, batch_size=args.batch_size, shuffle=True) #Train loader
-    valid_loader = DataLoader(dataset=valid_ds, batch_size=args.batch_size) #Valid Loader
+    
+    train_loader = DataLoader(dataset=train_ds, batch_size=args.batch_size, shuffle=True,num_workers=args.num_workers) #Train loader
+    valid_loader = DataLoader(dataset=valid_ds, batch_size=args.batch_size,num_workers=args.num_workers) #Valid Loader
     test_loader = DataLoader(dataset=test_ds,batch_size=args.batch_size) #Test Loader
 
     #model = Lit(args)
@@ -378,5 +401,5 @@ if __name__ == '__main__':
         monitor="validation_loss",
         mode="min",
         filename="checkpoint-{epoch:02d}-{validation_loss:.2f}-{validation_acc:.2f}-{train_acc:.2f}",) #change name if needed
-    trainer = pl.Trainer(accelerator="gpu", devices=[0,1,2,3],max_epochs = args.epochs, callbacks=[checkpoint_callback],strategy="ddp_spawn")
+    trainer = pl.Trainer(accelerator="gpu", devices=[0],max_epochs = args.epochs, callbacks=[checkpoint_callback],strategy="ddp_spawn")
     trainer.fit(model,train_loader,valid_loader)

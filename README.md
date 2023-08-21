@@ -1,4 +1,4 @@
-# StudienArbeit: Expediting Adversarial Training with Prediction Methods for PointNet and DGCNN
+# StudienArbeit: Expediting Adversarial Training with Prediction Methods for Point Cloud Classification
 
 This project aims to expedite adversarial training with prediction methods to enhance the resilience of PointNet and DGCNN architectures against adversarial attacks on point cloud data.
 
@@ -33,7 +33,7 @@ You can also customize the settings by using the following command line argument
 *   `--step_size`: Set the step size for adversarial attacks (default: 0.001).
 *   `--steps`: Set the number of steps for a PGD attack (default: 5).
 *   `--epsilon`: Set the epsilon value for adversarial attacks (default: 0.1).
-*   `--num-workers`: Set the number of workers (default: 0).
+*   `--num_workers`: Set the number of workers (default: 0).
 *   `--batch-size`: Set the batch size (default: 32).
 *   `--delta`: Set the value of the multiplication factor (Gamma value in the report) of the prediction method (default:1).
 
