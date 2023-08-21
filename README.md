@@ -35,7 +35,7 @@ You can also customize the settings by using the following command line argument
 *   `--epsilon`: Set the epsilon value for adversarial attacks (default: 0.1).
 *   `--num-workers`: Set the number of workers (default: 0).
 *   `--batch-size`: Set the batch size (default: 32).
-*   `--delta`: Set the value of the multiplication factor of the prediction method (default: 1).
+*   `--delta`: Set the value of the multiplication factor (Gamma value in the report) of the prediction method (default:1).
 
 ## Contents
 
@@ -46,3 +46,7 @@ This repository contains the following files:
 - `models.py`: Implementation of PointNet and DGCNN architectures.
 
 The dataset used in this project is [ModelNet10](http://3dvision.princeton.edu/projects/2014/3DShapeNets/ModelNet10.zip).
+
+## Report
+
+The detailed information and analysis of this project can be found at - [Report](https://github.com/saiteja1012/Expediting-Adversarial-Training-with-Prediction-Methods-for-Point-Cloud-Classification/files/12395324/Studienarbeit_Saiteja_Gande.pdf)
