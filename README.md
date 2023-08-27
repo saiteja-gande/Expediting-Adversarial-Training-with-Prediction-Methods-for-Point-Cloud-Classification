@@ -44,9 +44,10 @@ This repository contains the following files:
 - `attacks.py`: Implementation of adversarial attacks used in this project.
 - `dataloader.py`: Data loader class with necessary augmentations.
 - `models.py`: Implementation of PointNet and DGCNN architectures.
+- `experimental.py`: Incorrect implementation (similar to main.py) of the prediction method, yet it produces promising results.
 
 The dataset used in this project is [ModelNet10](http://3dvision.princeton.edu/projects/2014/3DShapeNets/ModelNet10.zip).
 
 ## Report
 
-The detailed information and analysis of this project can be found at - [Report](https://github.com/saiteja1012/Expediting-Adversarial-Training-with-Prediction-Methods-for-Point-Cloud-Classification/files/12395324/Studienarbeit_Saiteja_Gande.pdf)
+The detailed information and analysis of this project can be found at - [Report](https://github.com/saiteja1012/Expediting-Adversarial-Training-with-Prediction-Methods-for-Point-Cloud-Classification/files/12448520/Studienarbeit_Saiteja_Gande.pdf)
